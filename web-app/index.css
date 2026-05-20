@@ -1,0 +1,474 @@
+/* ── TOKENS ─────────────────────────────────────────────────── */
+:root {
+  --navy:       #0f1c2e;
+  --navy2:      #152236;
+  --navy3:      #1a2d45;
+  --cell:       #1e3a5a;
+  --cell-hover: #264d78;
+  --cell-hit:   #c0392b;
+  --cell-miss:  #2c4a6e;
+  --cell-sunk:  #7b1a1a;
+  --gold:       #c9a84c;
+  --gold2:      #e8c86a;
+  --red:        #e05c6a;
+  --blue-text:  #6a9fc0;
+  --text:       #d4c9a8;
+  --text-dim:   #3a5a78;
+  --border:     rgba(201,168,76,0.35);
+  --gap:        4px;
+  --cell-size:  46px;
+}
+
+/* ── RESET ───────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: 'Barlow Condensed', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.2rem 1.8rem 2rem;
+  gap: 0;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ─────────────────────────────────────────────────── */
+header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.anchor {
+  font-size: 2rem;
+  color: var(--gold);
+  line-height: 1;
+}
+
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.4rem;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.header-line {
+  height: 1px;
+  background: var(--gold);
+  width: 100%;
+  opacity: 0.5;
+}
+
+/* ── MAIN LAYOUT ─────────────────────────────────────────────── */
+main {
+  display: grid;
+  grid-template-columns: 1fr 220px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+  flex: 1;
+}
+
+/* ── BOARD SECTION ───────────────────────────────────────────── */
+.board-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* centres label + frame horizontally */
+  gap: 1rem;
+}
+
+.board-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.board-label.firing  { color: var(--red); }
+.board-label.defence { color: var(--gold2); }
+
+/* ── BOARD FRAME ─────────────────────────────────────────────── */
+.board-frame {
+  position: relative;
+  display: inline-flex;   /* shrink-wraps tightly around the grid */
+  padding: 14px;          /* space between corners and grid */
+}
+
+/* top-left corner */
+.board-frame::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 22px; height: 22px;
+  border-top: 2px solid var(--gold);
+  border-left: 2px solid var(--gold);
+  opacity: 0.7;
+}
+
+/* bottom-right corner */
+.board-frame::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 22px; height: 22px;
+  border-bottom: 2px solid var(--gold);
+  border-right: 2px solid var(--gold);
+  opacity: 0.7;
+}
+
+/* top-right and bottom-left via extra wrapper pseudo on the grid */
+.board-frame .grid::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 22px; height: 22px;
+  border-top: 2px solid var(--gold);
+  border-right: 2px solid var(--gold);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.board-frame .grid::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 22px; height: 22px;
+  border-bottom: 2px solid var(--gold);
+  border-left: 2px solid var(--gold);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* ── GRID ────────────────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(10, var(--cell-size));
+  grid-template-rows:    repeat(10, var(--cell-size));
+  gap: var(--gap);
+  position: relative; /* needed for ::before/::after corners */
+}
+
+/* ── CELL ────────────────────────────────────────────────────── */
+.cell {
+  width: var(--cell-size);
+  height: var(--cell-size);
+  background: var(--cell);
+  border-radius: 6px;
+  cursor: default;
+  position: relative;
+  transition: background 0.12s, transform 0.1s;
+}
+
+.cell.targetable {
+  cursor: crosshair;
+}
+
+.cell.targetable:hover {
+  background: var(--cell-hover);
+  transform: scale(1.06);
+  z-index: 2;
+}
+
+.cell.ship {
+  background: #224060;
+}
+
+.cell.hit {
+  background: var(--cell-hit);
+  animation: hitflash 0.4s ease-out;
+}
+
+.cell.hit::after {
+  content: '✕';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #ff8080;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.cell.miss {
+  background: var(--cell-miss);
+}
+
+.cell.miss::after {
+  content: '·';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-dim);
+  font-size: 1.4rem;
+}
+
+.cell.sunk {
+  background: var(--cell-sunk);
+}
+
+.cell.sunk::after {
+  content: '✕';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #cc4040;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* drag placement highlights */
+.cell.drop-ok  { background: rgba(60,180,100,0.25) !important; outline: 2px solid #4aaa70; }
+.cell.drop-bad { background: rgba(200,60,60,0.25)  !important; outline: 2px solid #cc4040; }
+
+@keyframes hitflash {
+  0%   { background: rgba(200,60,60,0.8); transform: scale(1.12); }
+  100% { background: var(--cell-hit); transform: scale(1); }
+}
+
+/* ── BOARD STATS ─────────────────────────────────────────────── */
+.board-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  align-items: flex-end;
+  padding-top: 0.5rem;
+}
+
+.stat { text-align: center; }
+
+.stat-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
+  color: var(--gold2);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.stat-lbl {
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* ── CENTER PANEL ────────────────────────────────────────────── */
+.center-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── ROUND DISPLAY ───────────────────────────────────────────── */
+.round-display {
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.round-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.15em;
+  color: var(--gold2);
+  display: block;
+  text-transform: uppercase;
+}
+
+.round-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.4rem;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+}
+
+/* ── FLEET CARDS ─────────────────────────────────────────────── */
+.fleet-card {
+  background: var(--navy2);
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+}
+
+.fleet-title {
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(201,168,76,0.2);
+}
+
+.fleet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fleet-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.fleet-name {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blue-text);
+  flex: 1;
+}
+
+.fleet-name.enemy { color: var(--red); }
+
+.fleet-pips {
+  display: flex;
+  gap: 3px;
+}
+
+.fleet-pips .pip {
+  width: 9px;
+  height: 9px;
+  background: var(--blue-text);
+  border-radius: 1px;
+}
+
+.fleet-pips.enemy .pip { background: var(--red); }
+.fleet-pips .pip.dead   { background: var(--cell-sunk); opacity: 0.5; }
+
+/* ── MODE BUTTONS ────────────────────────────────────────────── */
+.mode-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mode-btn {
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--navy2);
+  border: 1px solid var(--border);
+  color: var(--gold);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.mode-btn:hover {
+  background: var(--navy3);
+  border-color: var(--gold2);
+}
+
+.mode-btn.active {
+  background: rgba(201,168,76,0.1);
+  border-color: var(--gold2);
+  color: var(--gold2);
+}
+
+/* ── STATUS MESSAGE ──────────────────────────────────────────── */
+#status-msg {
+  text-align: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  min-height: 1.2em;
+  margin-top: 6px;
+}
+
+#status-msg.hit  { color: var(--red); }
+#status-msg.sunk { color: var(--gold2); }
+#status-msg.win  { color: #5ec47a; }
+#status-msg.lose { color: var(--red); }
+
+/* ── GAME OVER OVERLAY ───────────────────────────────────────── */
+.overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(8,15,25,0.88);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s;
+}
+
+.overlay.show { opacity: 1; pointer-events: all; }
+
+.overlay-card {
+  background: var(--navy2);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--gold);
+  padding: 2.5rem 3rem;
+  text-align: center;
+  max-width: 400px; width: 90%;
+  transform: translateY(14px);
+  transition: transform 0.35s;
+}
+
+.overlay.show .overlay-card { transform: translateY(0); }
+
+.overlay-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.5rem; letter-spacing: 0.2em;
+  line-height: 1; margin-bottom: 0.3rem;
+}
+
+.overlay-title.win  { color: #5ec47a; }
+.overlay-title.lose { color: var(--red); }
+
+.overlay-sub {
+  font-size: 0.75rem; color: var(--text-dim);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.overlay-stats {
+  display: flex; gap: 1.5rem;
+  justify-content: center; margin-bottom: 1.8rem;
+}
+
+.overlay-stat-v {
+  display: block;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem; color: var(--gold);
+  letter-spacing: 0.06em;
+}
+
+.overlay-stat-l {
+  font-size: 0.58rem; color: var(--text-dim);
+  letter-spacing: 0.16em; text-transform: uppercase;
+}
+
+.overlay-btn {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem; letter-spacing: 0.2em;
+  padding: 8px 24px;
+  border: 1px solid var(--gold);
+  background: rgba(201,168,76,0.1);
+  color: var(--gold);
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.15s;
+}
+
+.overlay-btn:hover { background: rgba(201,168,76,0.22); }
+
+/* ── RESPONSIVE ──────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  :root { --cell-size: 38px; }
+}
+
+@media (max-width: 900px) {
+  main { grid-template-columns: 1fr; }
+  :root { --cell-size: 32px; }
+}

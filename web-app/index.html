@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Naval Command</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-left">
+      <span class="anchor">&#9875;</span>
+      <h1>Naval Command</h1>
+    </div>
+    <div class="header-line"></div>
+  </header>
+
+  <!-- MAIN ARENA -->
+  <main>
+
+    <!-- LEFT BOARD -->
+    <section class="board-section" aria-label="Firing grid">
+      <div class="board-label firing">Firing</div>
+      <div class="board-frame">
+        <div class="grid" id="firing-grid"></div>
+      </div>
+      <div class="board-stats">
+        <div class="stat">
+          <div class="stat-val" id="left-hits">4</div>
+          <div class="stat-lbl">Hits</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="left-rate">51%</div>
+          <div class="stat-lbl">Hit Rate</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="left-sunk">2</div>
+          <div class="stat-lbl">Sunk</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CENTER PANEL -->
+    <aside class="center-panel">
+
+      <div class="round-display">
+        <span class="round-label">Round</span>
+        <span class="round-num" id="round-num">2</span>
+      </div>
+
+      <!-- Friendly Fleet -->
+      <div class="fleet-card">
+        <div class="fleet-title">Friendly Fleet</div>
+        <div class="fleet-list" id="friendly-fleet">
+          <div class="fleet-row">
+            <span class="fleet-name">Carrier</span>
+            <div class="fleet-pips" data-len="5"></div>
+          </div>
+          <div class="fleet-row">
+            <span class="fleet-name">Battleship</span>
+            <div class="fleet-pips" data-len="4"></div>
+          </div>
+          <div class="fleet-row">
+            <span class="fleet-name">Cruiser</span>
+            <div class="fleet-pips" data-len="3"></div>
+          </div>
+          <div class="fleet-row">
+            <span class="fleet-name">Submarine</span>
+            <div class="fleet-pips" data-len="3"></div>
+          </div>
+          <div class="fleet-row">
+            <span class="fleet-name">Destroyer</span>
+            <div class="fleet-pips" data-len="2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Opposition Fleet -->
+      <div class="fleet-card">
+        <div class="fleet-title">Opposition Fleet</div>
+        <div class="fleet-list" id="opposition-fleet">
+          <div class="fleet-row">
+            <span class="fleet-name enemy">Carrier</span>
+            <div class="fleet-pips enemy" data-len="5"></div>
+          </div>
+          <div class="fleet-row">
+            <span class="fleet-name enemy">Battleship</span>
+            <div class="fleet-pips enemy" data-len="4"></div>
+          </div>
+          <div class="fleet-row">
+            <span class="fleet-name enemy">Cruiser</span>
+            <div class="fleet-pips enemy" data-len="3"></div>
+          </div>
+          <div class="fleet-row">
+            <span class="fleet-name enemy">Submarine</span>
+            <div class="fleet-pips enemy" data-len="3"></div>
+          </div>
+          <div class="fleet-row">
+            <span class="fleet-name enemy">Destroyer</span>
+            <div class="fleet-pips enemy" data-len="2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode Buttons -->
+      <div class="mode-buttons">
+        <button class="mode-btn" id="btn-human">Play Against<br>Human</button>
+        <button class="mode-btn" id="btn-hunt">Play Against Hunt/<br>Target FSM</button>
+        <button class="mode-btn active" id="btn-prob">Play Against<br>Probability Density Map</button>
+      </div>
+
+    </aside>
+
+    <!-- RIGHT BOARD -->
+    <section class="board-section" aria-label="Defence grid">
+      <div class="board-label defence">Defence</div>
+      <div class="board-frame">
+        <div class="grid" id="defence-grid"></div>
+      </div>
+      <div class="board-stats">
+        <div class="stat">
+          <div class="stat-val" id="right-hits">4</div>
+          <div class="stat-lbl">Hits</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="right-rate">51%</div>
+          <div class="stat-lbl">Hit Rate</div>
+        </div>
+        <div class="stat">
+          <div class="stat-val" id="right-sunk">2</div>
+          <div class="stat-lbl">Sunk</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="index.js"></script>
+</body>
+</html>
