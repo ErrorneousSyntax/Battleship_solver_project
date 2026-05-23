@@ -13,6 +13,9 @@ body {
   font-family: Georgia, serif;
 }
 
+
+
+/*----------------------------HEADER ON TOP OF ALL PAGES--------------------------*/
 header {
   display: flex;
   justify-content: space-between; /*Send buttons to the right end*/
@@ -26,6 +29,7 @@ header {
   border: none;
   background: transparent;
   font-family: Georgia, serif;
+  cursor: pointer;
 }
 
 /* logo: icon + text side by side */ 
@@ -48,6 +52,9 @@ header {
   display: block;
 }
 
+
+
+/*----------------------------START PAGE---------------------------*/
 #start {
   text-align: center;
   padding-top: 120px;
@@ -70,16 +77,32 @@ header {
   border-radius: 6px;
   font-family: inherit;
   cursor: pointer;
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+/*some fancies*/
+#start .start-button:hover,
+#start .start-button:focus-visible {
+  background: rgba(201, 168, 76, 0.12);
+  box-shadow: 0 0 18px rgba(201, 168, 76, 0.28);
+  transform: translateY(-2px);
+}
+#start .start-button:active {
+  transform: translateY(0);
 }
 
 
+/*----------------------------SETUP ---------------------------*/
 
-.layout {
+#setup h1 {
+  margin: 8px 0 20px;
+}
+
+.setup-layout {
   display: grid;
-  grid-template-columns: 1fr 220px 1fr;
-  gap: 24px;
+  grid-template-columns: max-content 148px max-content;
+  justify-content: center;
   align-items: start;
-  margin-top: 24px;
+  gap: 12px;
 }
 
 h1 {
@@ -91,15 +114,26 @@ h1 {
   color: var(--red);
 }
 
+.setup-board {
+  display: grid;
+  gap: 8px;
+}
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(10, 32px);
-  grid-template-rows: repeat(10, 32px);
+  grid-template-columns: repeat(10, var(--grid-cell-size, 32px));
+  grid-template-rows: repeat(10, var(--grid-cell-size, 32px));
   gap: 4px;
   border: 2px solid var(--gold);
+  border-radius:10px;
   padding: 8px;
   width: max-content;
   margin: auto;
+}
+
+.setup-grid {
+  --grid-cell-size: 28px;
+  border-radius: 0;
 }
 
 .cell {
@@ -107,8 +141,162 @@ h1 {
   border-radius: 4px;
 }
 
-.panel, .dock {
+.panel,
+.dock {
   border: 2px solid var(--gold);
   padding: 16px;
   text-align: center;
+}
+
+.fleet-column {
+  display: grid;
+  gap: 14px;
+  padding-top: 14px;
+}
+
+.fleet-panel {
+  border: 3px solid var(--gold);
+  border-radius: 6px;
+  padding: 6px 8px 10px;
+  background: rgba(8, 21, 34, 0.84);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.fleet-panel h2 {
+  margin: 0 0 6px;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: normal;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.fleet-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  text-transform: uppercase;
+}
+
+.friendly .fleet-row {
+  color: #6fa5dc;
+}
+
+.opposition .fleet-row {
+  color: var(--red);
+}
+
+.fleet-health {
+  display: block;
+  height: 5px;
+  margin-top: 5px;
+  background-image: repeating-linear-gradient(
+    to right,
+    #d9d9d9 0 5px,
+    transparent 5px 9px
+  );
+}
+
+.health-5 {
+  width: 45px;
+}
+
+.health-4 {
+  width: 36px;
+}
+
+.health-3 {
+  width: 27px;
+}
+
+.health-2 {
+  width: 18px;
+}
+
+.ship-dock {
+  display: grid;
+  justify-content: center;
+  gap: 4px;
+  color: #6fa5dc;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.ship-row {
+  display: grid;
+  grid-template-columns: 90px max-content;
+  align-items: center;
+  gap: 8px;
+}
+
+.ship {
+  border: 1px solid #6fa5dc;
+  border-radius: 6px;
+  padding: 3px 5px;
+  height: 12px;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--red) 0 13px,
+    transparent 13px 22px
+  );
+  background-origin: content-box;
+  background-clip: content-box;
+}
+
+.carrier {
+  width: 106px;
+}
+
+.battleship {
+  width: 84px;
+}
+
+.cruiser,
+.submarine {
+  width: 62px;
+}
+
+.destroyer {
+  width: 40px;
+}
+
+.ready-button {
+  display: block;
+  margin: 12px auto 0;
+  padding: 8px 24px;
+  background: transparent;
+  color: var(--gold);
+  border: 2px solid var(--gold);
+  border-radius: 6px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/*----------------------------PLAY ---------------------------*/
+
+.battle-layout {
+  display: grid;
+  grid-template-columns: 1fr 220px 1fr;
+  gap: 24px;
+  align-items: start;
+  margin-top: 24px;
+}
+
+@media (max-width: 920px) {
+  body {
+    padding: 16px;
+  }
+
+  .setup-layout,
+  .battle-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .fleet-column {
+    grid-row: 2;
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    padding-top: 0;
+  }
 }
