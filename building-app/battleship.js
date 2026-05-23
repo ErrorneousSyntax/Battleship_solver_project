@@ -131,8 +131,9 @@ Battleship.cellIsInisideBoard = function(row, col){
 }
 
 /**
- * Gets the value stored at a specific board position.
- *
+ * Gets the value stored at a specific board position, and returns
+ * null instead of crash if the cell does not exist
+ * 
  * @param {string[][]} board  The board to read from.
  * @param {number} row Row index.
  * @param {number} col  Column index.
@@ -145,26 +146,102 @@ Battleship.getCell = function(board, row, col){
   return board[row][col]
 }
 
+/**
+ * Sets specific cell on the board to a certain value
+ * 
+ * @param {string[][]} board  The board to read from.
+ * @param {number} row Row index.
+ * @param {number} col  Column index.
+ * @param {string} Cell value to be set to 
+ * @returns {string[][]} board New board that has been set.
+ */
+Battleship.setCell = function(board,row,col,value){
+  if (Battleship.cellIsInisideBoard(row,col) != true){
+    return board
+  }
+  /* Ensuring functional programming paradigms */
+  return board.map(function(currentRow,r){
+    return currentRow.map(function(currentCell, c){
+      if (r === row && c == col){
+        return value
+      }
+      return currentCell
+    })
+  })
+}
 
-// setCell(board, row, col, value)
-// getAllCells(board)
-// getAdjacentCells(cell)
-// cloneBoard(board)
+/**
+ * Returns every cell coordinate on the board.
+ *
+ * @param {string[][]} board  Board to inspect.
+ * @returns {{ row: number, col: number }[]} Array of board coordinates.
+ */
+Battleship.getAllCells = function (board) {
+  const arr = []
+  // loop through every row
+  for (let row=0; row<board.length; row++){
+    for (let col=0; col<board[row].length; col++){
+      arr.push({"row": row,"col":col})
+    }
+  return arr
+  }
+}
+
+/**
+ * Finds the cell id of adjacant cells
+ * 
+ * @param {{ row: number, col: number }} cellPosition  The centre cell.
+ */
+Battleship.getAdjacentCells = function(cellPosition){
+  const possibleCells = [
+    { row: cellPosition.row - 1, col: cellPosition.col }, 
+    { row: cellPosition.row + 1, col: cellPosition.col }, 
+    { row: cellPosition.row, col: cellPosition.col - 1 }, 
+    { row: cellPosition.row, col: cellPosition.col + 1 }  
+  ]
 
 
-// ==========================
-// SHIP PLACEMENT
-// ==========================
+  return possibleCells.filter(function(cell){
+    return Battleship.cellIsInisideBoard(cell.row,cell.col)
+  })
+}
 
-// getShipCells(startCell, shipLength, orientation)
+
+//----------------------- SHIP PLACEMENT -----------------------
+
+
+/**
+ * Finds the board cells occupied by a ship from a starting position.
+ *
+ * This function does not modify the board. It only returns the coordinates
+ * the ship would occupy based on its length and orientation.
+ *
+ * @param {{ row: number, col: number }} cellPosition  Starting cell of the ship.
+ * @param {{ name: string, length: number }} ship  Ship object containing length.
+ * @param {string} orientation  Ship orientation: horizontal or vertical.
+ * @returns {{ row: number, col: number }[]} Array of cells occupied by the ship.
+ */
+Battleship.getShipCells = function(cellPosition, ship, orientation){
+  const cells = [];
+
+  for (let i=0; i<ship.length; i++){
+    if (orientation === Battleship.ORIENTATION.HORIZONTAL){
+      cells.push({"row":cellPosition.row, "col": cellPosition.col+i})
+    }
+    else if (orientation === Battleship.ORIENTATION.VERTICAL){
+      cells.push({"row":cellPosition.row+i, "col": cellPosition.col})
+    }
+  }
+  return cells
+}
+
 // canPlaceShip(board, ship, startCell, orientation)
 // placeShip(board, ship, startCell, orientation)
 // placeFleetRandomly(board, fleet)
 
 
-// ==========================
-// SHOT LOGIC
-// ==========================
+//----------------------- SHOT LOGIC -----------------------
+
 
 // hasAlreadyBeenShot(shotsBoard, cell)
 // resolveShot(targetBoard, targetFleet, cell)
