@@ -247,6 +247,8 @@ Battleship.getShipCells = function(cellPosition, ship, orientation){
 Battleship.canPlaceShip = function(board, ship, startCell, orientation){
   // find the cells the ship would occupy
   const shipCells = Battleship.getShipCells(startCell,ship,orientation)
+
+  //check each cell 
   for (const cell of shipCells){
     if (!Battleship.cellIsInisideBoard(cell.row, cell.col) 
       || Battleship.getCell(board,cell.row,cell.col) !== Battleship.CELL.EMPTY){
@@ -279,11 +281,71 @@ Battleship.placeShip = function (board, ship, startCell, orientation) {
   for (const cell of shipCells){
     newBoard = Battleship.setCell(newBoard, cell.row,cell.col,Battleship.CELL.SHIP)
   }
+
+  const updatedShip = {
+    name: ship.name,
+    length: ship.length,
+    hits: ship.hits,
+    sunk: ship.sunk,
+    cells:shipCells
+  }
+
+  return {board: newBoard, updatedShip}
 }
 
 
 
 // placeFleetRandomly(board, fleet)
+/**
+ * Randomly place fleet on the board
+ * 
+ * @param {string[][]} board current board
+ * @param {Object} fleet Fleet of ships
+ * @returns {{ board: string[][], fleet: Object[] }} updated board and fleet
+ */
+Battleship.placeFleetRandomly = function(board, fleet){
+  // Assign a new board variable and new placedFleet variable
+  let newBoard=board
+  const placedFleet = [];
+
+  // Use Math.random to find a starting cell 
+  for (const ship of fleet){
+    let allPlaced = false
+    while (allPlaced != true){
+      //Random starting cell:
+      const row = Math.floor(Math.random() * Battleship.BOARD_SIZE);
+      const col = Math.floor(Math.random() * Battleship.BOARD_SIZE);
+      const startCell = {row, col}
+
+      //Random orientation
+      const getRandomOrientation = () => {
+        const randomNumber = Math.round(Math.random());
+
+        if (randomNumber === 1) {
+          return Battleship.ORIENTATION.HORIZONTAL;
+        } else {
+          return Battleship.ORIENTATION.VERTICAL;
+        }
+      }
+
+      const orientation = getRandomOrientation();
+
+      const result = Battleship.placeShip(newBoard,ship,startCell,orientation)
+
+      if (result !== null) {
+        newBoard = result.board;
+        placedFleet.push(result.ship);
+        allPlaced = true;
+      }
+    }
+  }
+
+  return {
+    board: newBoard,
+    fleet: placedFleet
+  };
+};
+
 
 
 //----------------------- SHOT LOGIC -----------------------
