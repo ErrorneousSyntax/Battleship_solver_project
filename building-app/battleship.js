@@ -235,8 +235,54 @@ Battleship.getShipCells = function(cellPosition, ship, orientation){
   return cells
 }
 
-// canPlaceShip(board, ship, startCell, orientation)
-// placeShip(board, ship, startCell, orientation)
+/**
+ * Returns true or false on if a ship can be placed on that cel
+ * 
+ * @param {string[][]} board the current board
+ * @param {{ name: string, length: number }} ship  Ship object containing length.
+ * @param {{ row: number, col: number }} Cell 
+ * 
+ * @returns {boolean} if the ship can be placed or not
+ */
+Battleship.canPlaceShip = function(board, ship, startCell, orientation){
+  // find the cells the ship would occupy
+  const shipCells = Battleship.getShipCells(startCell,ship,orientation)
+  for (const cell of shipCells){
+    if (!Battleship.cellIsInisideBoard(cell.row, cell.col) 
+      || Battleship.getCell(board,cell.row,cell.col) !== Battleship.CELL.EMPTY){
+      return false
+    }
+  }
+  return true
+}
+
+
+
+/**
+ * Places a ship on the board if the placement is valid.
+ * returns a new board and an updated ship object
+ *
+ * @param {string[][]} board  board current
+ * @param {Object} ship  ship object to place.
+ * @param {{ row: number, col: number }} startCell starting cell
+ * @param {string} orientation  horizontal or vertical
+ * @returns {{ board: string[][], ship: Object } | null} Updated board and ship, or null if invalid.
+ */
+Battleship.placeShip = function (board, ship, startCell, orientation) {
+  if (!Battleship.canPlaceShip(board, ship, startCell, orientation)){
+    return null
+  }
+  const shipCells = Battleship.getShipCells(startCell, ship, orientation)
+
+  let newBoard = board
+  
+  for (const cell of shipCells){
+    newBoard = Battleship.setCell(newBoard, cell.row,cell.col,Battleship.CELL.SHIP)
+  }
+}
+
+
+
 // placeFleetRandomly(board, fleet)
 
 
