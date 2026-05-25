@@ -51,7 +51,7 @@ Battleship.createEmptyBoard = function (){
   for (let row=0;row<Battleship.BOARD_SIZE;row++){
     const currentRow=[]
     for (let col=0;col<Battleship.BOARD_SIZE;col++){
-      currentRow.push(BATTLESHIP.CELL.EMPTY)
+      currentRow.push(Battleship.CELL.EMPTY)
     }
     board.push(currentRow)
   }
@@ -507,12 +507,92 @@ Battleship.resolveShot = function(targetBoard, targetFleet, shotsBoard, cell) {
 
 //----------------------- GAME LOGIC -----------------------
 
+/**
+ * Switches the active turn between player and computer
+ *
+ * @param {Object} state  Current game state.
+ * @returns {Object} Updated game state.
+ */
+Battleship.switchTurn = function (state) {
+  // Using ... notation to copy everything before
+  if (state.turn === "computer") {
+    return {
+      ...state,
+      turn: "player"
+    };
+  }
+  if (state.turn === "player") {
+    return {
+      ...state,
+      turn: "computer"
+    };
+  }
+};
 
-// startGame(state)
-// switchTurn(state)
-// handlePlayerShot(state, cell)
+
+//   return {
+//     playerBoard: Battleship.createEmptyBoard(),
+//     computerBoard: Battleship.createEmptyBoard(),
+
+//     playerFleet: Battleship.createInitialFleet(),
+//     computerFleet: Battleship.createInitialFleet(),
+
+//     /* Grid for shots visualisation */
+//     playerShots: Battleship.createEmptyBoard(),
+//     computerShots: Battleship.createEmptyBoard(),
+
+//     phase: Battleship.PHASE.MENU,
+//     turn: "player",
+//     winner: null
+//   }
+// }
+
+
+
+/**
+ * Checks whether either player has lost all ships.
+ *
+ * If all ships in a fleet are sunk, returns a new state with
+ * the winner set and the phase changed to GAME_OVER.
+ *
+ * @param {Object} state Current game state.
+ * @returns {Object} Updated game state.
+ */
+Battleship.checkGameOver = function(state){
+  const compFleet = state.computerFleet
+  if (Battleship.areAllShipsSunk(state.computerFleet, state.playerShots)){
+    return {
+      ...state,
+      winner:"player"
+    }
+  }
+  if (Battleship.areAllShipsSunk(state.playerFleet, state.computerShots)){
+    return {
+      ...state,
+      winner:"computer"
+    }
+  }
+  return{
+    ...state
+  }
+}
+
+/**
+ * Handles the player's shot against the computer.
+ *
+ * @param {Object} state  Current game state.
+ * @param {{ row: number, col: number }} cell  Cell being fired at.
+ * @returns {Object} Updated game state.
+ */
+Battleship.handlePlayerShot = function(state, cell){
+  
+}
+
+
+
+
 // handleComputerTurn(state)
-// checkGameOver(state)
+// startGame(state)
 
 
 //----------------------- RANDOM AI -----------------------
