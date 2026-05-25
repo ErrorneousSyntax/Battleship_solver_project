@@ -378,7 +378,7 @@ Battleship.findShipAtCell = function (fleet, cell){
   return undefined 
 }
 
-// isShipHit(ship, cell)
+
 /**
  * Checks if a specific ship is hit
  * @param {Object[]} ship Ship being compared
@@ -394,15 +394,115 @@ Battleship.isShipHit = function(ship, cell){
   return false
 }
 
-
-
-// resolveShot(targetBoard, targetFleet, cell)
-Battleship.resolveShot = function(targetBoard, targetFleet, cell){
-
+/**
+ * updates shotBoard object to mark cell
+ * @param {string[][]} shotsBoard  Board tracking previous shots.
+ * @param {{ row: number, col: number }} cell  Targetted cell.
+ * @param {string} result  Shot result: miss, hit, or sunk.
+ * @returns {string[][]} Updated shots board.
+ */
+Battleship.markShot = function(shotsBoard, cell, result){
+  return Battleship.setCell(shotsBoard,cell.row,cell.col,result)
 }
-// markShot(shotsBoard, cell, result)
-// isShipSunk(ship, shotsBoard)
-// areAllShipsSunk(fleet, shotsBoard)
+
+/**
+ * Checks if a specific ship is entirely sunk
+ * @param {Object[]} ship Ship being compared
+ * @param {string[][]} shotsBoard the current shot board
+ * @returns {boolean} True if all cells of the ship are "HIT"
+ */
+Battleship.isShipSunk = function(ship,shotsBoard){
+  let count = 0
+  for (let pos of ship.cells){
+    if (shotsBoard[pos.row][pos.col]===Battleship.CELL.HIT
+      || shotsBoard[pos.row][pos.col]===Battleship.CELL.SUNK
+    ){
+      count += 1
+    }
+  }
+  return count === ship.cells.length
+}
+
+
+/**
+ * Checks all ships to see if you still in da game 
+ * @param {Object[]} fleet The entire fleet
+ * @param {string[][]} shotsBoard the current shot board
+ * @returns {boolean} True if all cells of the ship are "HIT"
+ */
+Battleship.areAllShipsSunk = function(fleet,shotsBoard){
+  // let count = 0
+  // for (let ship of fleet){
+  //   if (Battleship.isShipSunk(ship,shotsBoard)){
+  //     count+=1
+  //   }
+  // }
+  // return count === fleet.length
+
+  // using .every
+  return fleet.every(function(ship){
+    return Battleship.isShipSunk (ship,shotsBoard)
+  })
+}
+
+
+/**
+ * Processes a shot against a target board and fleet.
+ *
+ * Determines whether the shot is a miss, hit, or sunk
+ * Returns updated shot board data and information about the result
+ *
+ * @param {string[][]} targetBoard  Board containing the opponent's ships.
+ * @param {Object[]} targetFleet  Opponent fleet.
+ * @param {string[][]} shotsBoard  Board tracking previous shots.
+ * @param {{ row: number, col: number }} cell - Target cell.
+ * @returns {Object} Shot result data. [shotsBoard][result][ship]
+ */
+Battleship.resolveShot = function(targetBoard, targetFleet, shotsBoard, cell) {
+  // already shot case
+  if (Battleship.hasAlreadyBeenShot(shotsBoard,cell)){
+    return {
+      shotsBoard:shotsBoard,
+      result: "alreadyShot",
+      ship:null
+    }
+  }
+  const targetCell = Battleship.getCell(targetBoard,cell.row,cell.col) // state of the cell
+
+  if (targetCell === Battleship.CELL.EMPTY){
+    return {
+      shotsBoard:Battleship.markShot(shotsBoard, cell, Battleship.CELL.MISS),
+      result: "miss",
+      ship:null
+    }
+  }
+  
+
+  if (targetCell === Battleship.CELL.SHIP){
+    const shipAtCell = Battleship.findShipAtCell(targetFleet,cell)
+    let tempBoard=Battleship.markShot(shotsBoard,cell,Battleship.CELL.HIT)
+
+    if (Battleship.isShipSunk(shipAtCell,tempBoard)){
+      for (let shipCell of shipAtCell.cells){
+        tempBoard = Battleship.markShot(
+          tempBoard,
+          shipCell,
+          Battleship.CELL.SUNK
+        )
+      }
+      return {
+        shotsBoard:tempBoard,
+        result: "sunk",
+        ship:shipAtCell
+      }
+    }
+    return{
+      shotsBoard:tempBoard,
+      result: "hit",
+      ship:shipAtCell
+    }
+  }
+};
 
 
 //----------------------- GAME LOGIC -----------------------
