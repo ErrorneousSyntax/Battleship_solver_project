@@ -51,7 +51,7 @@ Battleship.createEmptyBoard = function (){
   for (let row=0;row<Battleship.BOARD_SIZE;row++){
     const currentRow=[]
     for (let col=0;col<Battleship.BOARD_SIZE;col++){
-      currentRow.push(cell.EMPTY)
+      currentRow.push(BATTLESHIP.CELL.EMPTY)
     }
     board.push(currentRow)
   }
@@ -127,7 +127,7 @@ Battleship.createInitialGameState = function(){
  * @returns {boolean} True if the position is inside the board.
  */
 Battleship.cellIsInisideBoard = function(row, col){
-  return (row>=0 && row<Battleship.BOARD_SIZE && col >=0 && col <=Battleship.BOARD_SIZE)
+  return (row>=0 && row<Battleship.BOARD_SIZE && col >=0 && col < Battleship.BOARD_SIZE)
 }
 
 /**
@@ -183,8 +183,9 @@ Battleship.getAllCells = function (board) {
     for (let col=0; col<board[row].length; col++){
       arr.push({"row": row,"col":col})
     }
-  return arr
   }
+  return arr
+
 }
 
 /**
@@ -258,8 +259,6 @@ Battleship.canPlaceShip = function(board, ship, startCell, orientation){
   return true
 }
 
-
-
 /**
  * Places a ship on the board if the placement is valid.
  * returns a new board and an updated ship object
@@ -290,10 +289,8 @@ Battleship.placeShip = function (board, ship, startCell, orientation) {
     cells:shipCells
   }
 
-  return {board: newBoard, updatedShip}
+  return {board: newBoard, ship:updatedShip}
 }
-
-
 
 // placeFleetRandomly(board, fleet)
 /**
@@ -335,7 +332,7 @@ Battleship.placeFleetRandomly = function(board, fleet){
       if (result !== null) {
         newBoard = result.board;
         placedFleet.push(result.ship);
-        allPlaced = true;
+        placed = true;
       }
     }
   }
@@ -350,18 +347,66 @@ Battleship.placeFleetRandomly = function(board, fleet){
 
 //----------------------- SHOT LOGIC -----------------------
 
+/**
+ * Returns true or false on if the ship at the specified cell has been shot
+ * 
+ * @param {string[][]} shotsBoard board tracking shots
+ * @param {{ row: number, col: number }} cell Targetted cell
+ * @returns {Boolean} True if it has been shot
+ */
+Battleship.hasAlreadyBeenShot = function(shotsBoard, cell){
+  if (shotsBoard[cell.row][cell.col] === Battleship.CELL.EMPTY){
+    return false
+  }
+  return true 
+}
+/**
+ * Determines the class of ship at the target cell
+ * 
+ * @param {Object[]} fleet Array of ship objects 
+ * @param {{ row: number, col: number }} cell Targetted cell
+ * @returns {Object[] | undefined} Class of ship
+ */
+Battleship.findShipAtCell = function (fleet, cell){
+  for (let ship of fleet){
+    for (let cel of ship.cells){
+      if (cel.row===cell.row && cel.col === cell.col){
+        return ship
+      }
+    }
+  }
+  return undefined 
+}
 
-// hasAlreadyBeenShot(shotsBoard, cell)
-// resolveShot(targetBoard, targetFleet, cell)
-// markShot(shotsBoard, cell, result)
 // isShipHit(ship, cell)
+/**
+ * Checks if a specific ship is hit
+ * @param {Object[]} ship Ship being compared
+ * @param {{ row: number, col: number }} cell Targetted cell
+ * @returns {boolean} True if shots hits the ship 
+ */
+Battleship.isShipHit = function(ship, cell){
+  for (let pos of ship.cells){
+    if (pos.row === cell.row && pos.col === cell.col){
+      return true 
+    }
+  }
+  return false
+}
+
+
+
+// resolveShot(targetBoard, targetFleet, cell)
+Battleship.resolveShot = function(targetBoard, targetFleet, cell){
+
+}
+// markShot(shotsBoard, cell, result)
 // isShipSunk(ship, shotsBoard)
 // areAllShipsSunk(fleet, shotsBoard)
 
 
-// ==========================
-// GAME FLOW
-// ==========================
+//----------------------- GAME LOGIC -----------------------
+
 
 // startGame(state)
 // switchTurn(state)
@@ -370,17 +415,15 @@ Battleship.placeFleetRandomly = function(board, fleet){
 // checkGameOver(state)
 
 
-// ==========================
-// RANDOM AI
-// ==========================
+//----------------------- RANDOM AI -----------------------
+
 
 // getAvailableShots(shotsBoard)
 // chooseRandomShot(shotsBoard)
 
 
-// ==========================
-// HUNT / TARGET AI
-// ==========================
+//----------------------- HUNT/TARGET LOGIC -----------------------
+
 
 // createAIMemory()
 // chooseHuntTargetShot(shotsBoard, aiMemory)
@@ -389,9 +432,8 @@ Battleship.placeFleetRandomly = function(board, fleet){
 // updateAIMemory(aiMemory, shotResult)
 
 
-// ==========================
-// HEATMAP ALGORITHM
-// ==========================
+//----------------------- HEATMAP LOGIC -----------------------
+
 
 // createEmptyHeatmap()
 // generateHeatmap(shotsBoard, remainingShips)
@@ -401,8 +443,7 @@ Battleship.placeFleetRandomly = function(board, fleet){
 // normaliseHeatmap(heatmap)
 
 
-// ==========================
-// EXPORTS
-// ==========================
+//----------------------- EXPORT FUNCTIONS -----------------------
+
 
 // export functions needed by main.js / UI layer
